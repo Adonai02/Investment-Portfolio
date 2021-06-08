@@ -216,6 +216,9 @@ To find the most optimal portfolio we will make a loop where for each iteration 
 * Minimum variance portfolio:
 
 ```{r echo=FALSE}
+tickers <- c('MU', 'BAC', 'FB','GOOG', 'AAPL', 'PDD')
+weight <- c(0.4752+1e-04, 0.2063+1e-04, 0.1445+1e-04, 0.0829+1e-04, 
+            0.055+1e-04, 0.0355+1e-04)
 tickers_prices <- tq_get(tickers, get = "stock.prices")
 ret_log <- tickers_prices %>% group_by(symbol) %>%
   tq_transmute(select     = adjusted,
@@ -251,8 +254,14 @@ new_matrix<- cbind(weight_new,r_period, port_risk,shar_ratio )
 colnames(new_matrix) <- c(tickers,"Return", "Risk", "SharpeRatio")
 port_nuevo <- as_tibble(new_matrix)
 Riesgo_min <- subset(port_nuevo, Risk == min(port_nuevo$Risk))
-Riesgo_min
-
+Sharpe_max <- subset(port_nuevo, SharpeRatio == max(port_nuevo$SharpeRatio))
+plot_max <- c()
+plot_min <- c()
+for (j in c(1:length(tickers))) {
+  plot_max[j] <- as.numeric(Sharpe_max[j])
+  plot_min[j] <- as.numeric(Riesgo_min[j])   
+}
+Riesgo_min 
 ```
 
 
@@ -261,7 +270,6 @@ Riesgo_min
 
 ```{r echo=FALSE}
 
-Sharpe_max <- subset(port_nuevo, SharpeRatio == max(port_nuevo$SharpeRatio))
 Sharpe_max
 
 
@@ -271,12 +279,6 @@ Finally, let's visualize in a bar chart, the minimum variance portfolio for each
 
 
 ```{r echo=FALSE}
-plot_max <- c()
-plot_min <- c()
-for (j in c(1:length(tickers))) {
-  plot_max[j] <- as.numeric(Sharpe_max[j])
-  plot_min[j] <- as.numeric(Riesgo_min[j])   
-}
 barplot(plot_max, names.arg = tickers , xlab = "Assets", ylab= "Weights",
         main = "Minimum variance portfolio", legend.text = tickers,
          col = rainbow(6))
@@ -285,4 +287,4 @@ barplot(plot_min, names.arg = tickers , xlab = "Assets", ylab= "Weights",
       col = rainbow(7))
 ```
 
-**We can observe and mention some conclusions about the bar charts that for the stock "BAC" has a lot of weight in both bar charts, so we can conclude that, according to our investment portfolio, it is wise to give a lot of weight to this asset.**
+**We can observe and mention some conclusions about the bar charts that for the stock "GOOG" has a lot of weight in both bar charts, so we can conclude that, according to our investment portfolio, it is wise to give a lot of weight to this asset.**

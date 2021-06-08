@@ -142,18 +142,18 @@ iterations:
 <!-- -->
 
     #> # A tibble: 1 x 9
-    #>      MU    BAC    FB  GOOG   AAPL   PDD   Return   Risk SharpeRatio
-    #>   <dbl>  <dbl> <dbl> <dbl>  <dbl> <dbl>    <dbl>  <dbl>       <dbl>
-    #> 1 0.274 0.0921 0.197 0.249 0.0723 0.116 0.000741 0.0132      0.0561
+    #>      MU   BAC    FB  GOOG  AAPL   PDD   Return   Risk SharpeRatio
+    #>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>    <dbl>  <dbl>       <dbl>
+    #> 1 0.208 0.126 0.191 0.137 0.231 0.107 0.000728 0.0132      0.0550
 
 -   Maximum Sharpe Ratio Portfolio
 
 <!-- -->
 
     #> # A tibble: 1 x 9
-    #>      MU   BAC     FB  GOOG  AAPL    PDD   Return   Risk SharpeRatio
-    #>   <dbl> <dbl>  <dbl> <dbl> <dbl>  <dbl>    <dbl>  <dbl>       <dbl>
-    #> 1 0.134 0.172 0.0334 0.288 0.329 0.0429 0.000831 0.0137      0.0605
+    #>      MU   BAC     FB   GOOG  AAPL   PDD   Return   Risk SharpeRatio
+    #>   <dbl> <dbl>  <dbl>  <dbl> <dbl> <dbl>    <dbl>  <dbl>       <dbl>
+    #> 1 0.120 0.275 0.0132 0.0537 0.326 0.211 0.000831 0.0138      0.0603
 
 Finally, let’s visualize in a bar chart, the minimum variance portfolio
 for each asset, as well as the maximum sharpe ratio portfolio for each
@@ -162,6 +162,6 @@ asset.
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->
 
 **We can observe and mention some conclusions about the bar charts that
-for the stock “BAC” has a lot of weight in both bar charts, so we can
+for the stock “GOOG” has a lot of weight in both bar charts, so we can
 conclude that, according to our investment portfolio, it is wise to give
 a lot of weight to this asset.**
