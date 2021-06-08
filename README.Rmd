@@ -18,18 +18,152 @@ knitr::opts_chunk$set(
 
 The goal of Investment-Portfolio is to ...
 
+***
+## Stock selection and visualitazion of data
+
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
-```{r cars}
-summary(cars)
+
+The following is a list of the stocks used for the analysis of the portfolio with the respective weights of each stock, it should be noted that the following portfolio to be analyzed is not personal, it was taken from an investor of the following website http://dataroma.com/.
+
+**Assets**      | **Weight** 
+------------- | ------------- 
+MU            | 47.52% 
+BAC           | 20.63% 
+FB            | 14.45%
+GOOG          | 8.29%
+APPL          | 5.55%
+PDD           | 3.55%
+
+
+
+First, let's look at the historical prices of each stock as of 2014 in a table with tibble format, which is very useful for working with financial data.
+
+
+```{r include=FALSE}
+library(tidyquant) 
+library(timetk)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+tickers <- c('MU', 'BAC', 'FB','GOOG', 'AAPL', 'PDD')
+weight <- c(0.4752+1e-04, 0.2063+1e-04, 0.1445+1e-04, 0.0829+1e-04, 
+            0.055+1e-04, 0.0355+1e-04)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/master/examples>.
+```{r echo=FALSE}
+tickers_prices <- tq_get(tickers, get = "stock.prices")
+tickers_prices
 
-You can also embed plots, for example:
 
-```{r pressure, echo = FALSE}
-plot(pressure)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub.
+
+***
+## Individual returns and cumulative returns
+
+We will calculate the individual returns per asset.
+
+```{r echo=FALSE}
+  groupbysymbol <- group_by(tickers_prices, symbol)
+  retornos <- tq_transmute(data = groupbysymbol, mutate_fun = periodReturn,
+                           select = adjusted, period = "daily", col_rename = "Ret")
+  wts_tbl <- tibble(symbol = tickers, wts = weight)
+  ret_data <- left_join(retornos ,wts_tbl, by = 'symbol')
+  ret_data <- ret_data %>% mutate(wt_return = wts * Ret)
+  ret_data
+```
+
+
+We will work with the accumulated returns per asset, in this case 6 assets, the table of the accumulated returns for the 6 assets that were initially chosen is as follows.
+
+
+```{r echo=FALSE}
+port_ret <- ret_data %>%
+    group_by(date) %>%
+    summarise(port_ret = sum(wt_return))
+  port_cumulative_ret <- port_ret %>%
+    mutate(cr = cumprod(1 + port_ret))
+  port_cumulative_ret
+
+```
+
+If we plot cumulative return vs. date, we obtain the following graph, which is more descriptive.
+
+
+```{r echo = FALSE}
+ grafica <- port_cumulative_ret %>%
+    ggplot(aes(x = date, y = cr)) +
+    geom_line() +
+    labs(x = 'Date',y = 'Cumulative Returns',
+         title = 'Portfolio Cumulative Returns') +
+    theme_classic() +
+    scale_y_continuous(breaks = seq(1,2,0.1)) +
+    scale_x_date(date_breaks = 'year',
+                 date_labels = '%Y')
+grafica
+
+```
+
+***
+
+##  Some  important Statistics
+
+Calculating the average annualized returns and the average annualized returns excluding 2020 we obtain:
+
+```{r echo=FALSE}
+  average_annual_port_ret <- tq_performance(port_cumulative_ret,Ra = port_ret,
+                                            performance_fun = Return.annualized)
+  promedio_anual_retorno <- paste("The average annual portfolio returns is ", 
+                                  round((average_annual_port_ret[[1]] * 100),2),"%", sep = "")
+  promedio_anual_retorno
+  
+  portafolio_inv <- function(fecha_inicio = "2011-01-03", fecha_final){
+  tickers_prices <- tq_get(tickers, get = "stock.prices",from = fecha_inicio,
+                           to = fecha_final)
+  groupbysymbol <- group_by(tickers_prices, symbol)
+  retornos <- tq_transmute(data = groupbysymbol, mutate_fun = periodReturn,
+                           select = adjusted, period = "daily", col_rename = "Ret")
+  wts_tbl <- tibble(symbol = tickers, wts = weight)
+  ret_data <- left_join(retornos ,wts_tbl, by = 'symbol')
+  ret_data <- ret_data %>% mutate(wt_return = wts * Ret)
+  
+  port_ret <- ret_data %>%
+    group_by(date) %>%
+    summarise(port_ret = sum(wt_return))
+  port_cumulative_ret <- port_ret %>%
+    mutate(cr = cumprod(1 + port_ret))
+  grafica <- port_cumulative_ret %>%
+    ggplot(aes(x = date, y = cr)) +
+    geom_line() +
+    labs(x = 'Date',y = 'Cumulative Returns',
+         title = 'Portfolio Cumulative Returns') +
+    theme_classic() +
+    scale_y_continuous(breaks = seq(1,2,0.1)) +
+    scale_x_date(date_breaks = 'year',
+                 date_labels = '%Y')
+  average_annual_port_ret <- tq_performance(port_cumulative_ret,Ra = port_ret,
+                                            performance_fun = Return.annualized)
+  promedio_anual_retorno <- paste("The average annual portfolio returns until ",fecha_final," is ", 
+                                  round((average_annual_port_ret[[1]] * 100),2),"%", sep = "")
+  
+  vola_d <- sd(port_cumulative_ret$port_ret)
+  vola_d1 <- paste("The daily portfolio volatility is ",round((vola_d[[1]]),4))
+  vola_a <- vola_d *sqrt(252)
+  Sharp_Radio_Manual <- average_annual_port_ret$AnnualizedReturn / vola_a
+  Sharp_Radio_R <- port_cumulative_ret %>% tq_performance(Ra = port_ret, 
+                                                          performance_fun = SharpeRatio.annualized) %>% .[[1]]
+  Sharp_Radio_R <- paste("The annual portfolio sharpe ratio calculated using the tq_performance function is"
+                         ,round((Sharp_Radio_R[[1]]),4))
+  Sharp_Radio_Manual <- paste("The annual portfolio sharpe ratio calculated without the tq_performance function is"
+                              ,round((Sharp_Radio_Manual[[1]]),4))
+  
+  return(list(grafica, promedio_anual_retorno, vola_d1, Sharp_Radio_Manual, 
+              Sharp_Radio_R))
+}
+
+portaf_invers <- portafolio_inv(fecha_final = "2019-12-31")
+
+portaf_invers[2]
+
+```

@@ -14,8 +14,8 @@ portafolio_inv <- function(fecha_inicio = "2011-01-03", fecha_final){
   groupbysymbol <- group_by(tickers_prices, symbol)
   retornos <- tq_transmute(data = groupbysymbol, mutate_fun = periodReturn,
                            select = adjusted, period = "daily", col_rename = "Ret")
-  portafolio <- tq_portfolio(data = retornos, assets_col = symbol, returns_col = Ret,
-                             weights = weight)
+  #portafolio <- tq_portfolio(data = retornos, assets_col = symbol, returns_col = Ret,
+                             #weights = weight)
   wts_tbl <- tibble(symbol = tickers, wts = weight)
   ret_data <- left_join(retornos ,wts_tbl, by = 'symbol')
   ret_data <- ret_data %>% mutate(wt_return = wts * Ret)
@@ -54,7 +54,7 @@ portafolio_inv <- function(fecha_inicio = "2011-01-03", fecha_final){
               Sharp_Radio_R))
 }
 
-portaf_invers <- portafolio_inv(fecha_final = "2020-12-31")
+portaf_invers <- portafolio_inv(fecha_final = "2019-12-31")
 
 #-----------------------Buscar el portafolio Optimo---------------------------#
 tickers_prices <- tq_get(tickers, get = "stock.prices")
