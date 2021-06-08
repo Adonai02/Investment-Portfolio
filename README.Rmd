@@ -148,7 +148,7 @@ Calculating the average annualized returns and the average annualized returns ex
                                   round((average_annual_port_ret[[1]] * 100),2),"%", sep = "")
   
   vola_d <- sd(port_cumulative_ret$port_ret)
-  vola_d1 <- paste("The daily portfolio volatility is ",round((vola_d[[1]]),4))
+  vola_d1 <- paste("The daily portfolio volatility until ",fecha_final," is ",round((vola_d[[1]]),4))
   vola_a <- vola_d *sqrt(252)
   Sharp_Radio_Manual <- average_annual_port_ret$AnnualizedReturn / vola_a
   Sharp_Radio_R <- port_cumulative_ret %>% tq_performance(Ra = port_ret, 
@@ -159,7 +159,7 @@ Calculating the average annualized returns and the average annualized returns ex
                               ,round((Sharp_Radio_Manual[[1]]),4))
   
   return(list(grafica, promedio_anual_retorno, vola_d1, Sharp_Radio_Manual, 
-              Sharp_Radio_R))
+              Sharp_Radio_R, vola_a))
 }
 
 portaf_invers <- portafolio_inv(fecha_final = "2019-12-31")
@@ -167,3 +167,123 @@ portaf_invers <- portafolio_inv(fecha_final = "2019-12-31")
 portaf_invers[2]
 
 ```
+
+
+Now, We going to calculate the Standard deviation or the volatility of the portfolio.
+
+
+```{r echo=FALSE}
+
+  vola_d <- sd(port_cumulative_ret$port_ret)
+  vola_d1 <- paste("The daily portfolio volatility is ",round((vola_d[[1]]),4))
+  vola_d1
+  portaf_invers <- portafolio_inv(fecha_final = "2019-12-31")
+  portaf_invers[3]
+
+
+```
+
+
+Calculating the annual volatility of the portfolio, we obtain:
+
+
+```{r echo=FALSE}
+  vola_a <- vola_d *sqrt(252)
+portaf_invers <- portafolio_inv(fecha_final = "2019-12-31")
+paste("The annual portfolio volatility is ", vola_a)
+paste("The annual portfolio volatility until 2019-12-31 is ", portaf_invers[6])
+
+```
+
+The sharpe ratio is a measure of the excess return per unit of risk of an investment, it is used to show to what extent the return on an investment compensates the investor for taking risk in his investment, so it is good to calculate it.
+
+```{r echo=FALSE}
+
+  Sharp_Radio_R <- port_cumulative_ret %>% tq_performance(Ra = port_ret, 
+                                                          performance_fun = SharpeRatio.annualized) %>% .[[1]]
+  Sharp_Radio_R <- paste("The annual portfolio sharpe ratio is"
+                         ,round((Sharp_Radio_R[[1]]),4))
+  Sharp_Radio_R
+
+```
+
+***
+## Find the Portfolio optimization
+
+
+To find the most optimal portfolio we will make a loop where for each iteration we will calculate random weights, we will calculate the return for the given stocks with those weights, the standard deviation of each of the virtual portfolios as well as the sharp ratio of each portfolio, at the end, we will identify the portfolio with minimum variance and maximum sharp ratio, in our case, we obtain the following after 5,000 iterations:
+
+
+* Minimum variance portfolio:
+
+```{r echo=FALSE}
+tickers_prices <- tq_get(tickers, get = "stock.prices")
+ret_log <- tickers_prices %>% group_by(symbol) %>%
+  tq_transmute(select     = adjusted,
+               mutate_fun = periodReturn, 
+               period     = "daily", 
+               type       = "log",
+               col_rename = "ret_log")
+new_tib <-spread(ret_log, symbol, ret_log)
+sin_na <- replace_na(new_tib,list(FB = 0.0, PDD = 0.0))
+vec_prom_retl <- sin_na
+vec_prom_retl$date <- NULL
+#vec_prom_retl
+for_cov <- vec_prom_retl
+promedio_cols<- colMeans(vec_prom_retl)
+weight_new <- matrix(ncol = length(weight))
+r_period <- matrix(nrow = 5000)
+port_risk <- matrix(nrow = 5000)
+shar_ratio <- matrix(nrow = 5000)
+
+for (i in c(1:5000)) {
+  random <- runif(length(weight))
+  wei_norm <- random/sum(random)
+  weight_new <- rbind(wei_norm,weight_new)
+  retorno_total_random <- wei_norm * promedio_cols
+  r_period[i] <- sum(retorno_total_random)
+  r_annual <- (1+r_period)**(251)
+  cov_mat <- cov(for_cov)
+  port_risk[i] <- sqrt(t(array(wei_norm)) %*% (cov_mat %*% array(wei_norm)))
+  shar_ratio[i] <- r_period[i] / port_risk[i]
+}
+weight_new <- weight_new[1:5000,1:6]
+new_matrix<- cbind(weight_new,r_period, port_risk,shar_ratio )
+colnames(new_matrix) <- c(tickers,"Return", "Risk", "SharpeRatio")
+port_nuevo <- as_tibble(new_matrix)
+Riesgo_min <- subset(port_nuevo, Risk == min(port_nuevo$Risk))
+Riesgo_min
+
+```
+
+
+* Maximum Sharpe Ratio Portfolio
+
+
+```{r echo=FALSE}
+
+Sharpe_max <- subset(port_nuevo, SharpeRatio == max(port_nuevo$SharpeRatio))
+Sharpe_max
+
+
+```
+
+Finally, let's visualize in a bar chart, the minimum variance portfolio for each asset, as well as the maximum sharpe ratio portfolio for each asset.
+
+
+```{r echo=FALSE}
+plot_max <- c()
+plot_min <- c()
+for (j in c(1:length(tickers))) {
+  plot_max[j] <- as.numeric(Sharpe_max[j])
+  plot_min[j] <- as.numeric(Riesgo_min[j])   
+}
+barplot(plot_max, names.arg = tickers , xlab = "Assets", ylab= "Weights",
+        main = "Minimum variance portfolio", legend.text = tickers,
+         col = rainbow(6))
+barplot(plot_min, names.arg = tickers , xlab = "Assets", ylab= "Weights",
+      main = "Maximum Sharpe Ratio Portfolio", legend.text = tickers,
+      col = rainbow(7))
+```
+
+We can observe and mention some conclusions about the bar charts that for the stock "BAC" has a lot of weight in both bar charts, so we can conclude that, according to our investment portfolio, it is wise to give a lot of weight to this asset.

@@ -92,14 +92,18 @@ new_matrix<- cbind(weight_new,r_period, port_risk,shar_ratio )
 colnames(new_matrix) <- c(tickers,"Return", "Risk", "SharpeRatio")
 port_nuevo <- as_tibble(new_matrix)
 Riesgo_min <- subset(port_nuevo, Risk == min(port_nuevo$Risk))
-Riesgo_max <- subset(port_nuevo, Risk == max(port_nuevo$Risk))
+Sharpe_max <- subset(port_nuevo, SharpeRatio == max(port_nuevo$SharpeRatio))
 plot_max <- c()
 plot_min <- c()
 for (j in c(1:length(tickers))) {
-  plot_max[j] <- as.numeric(Riesgo_max[j])
+  plot_max[j] <- as.numeric(Sharpe_max[j])
   plot_min[j] <- as.numeric(Riesgo_min[j])   
 }
-barplot(plot_max, names.arg = tickers , xlab = "Assets", ylab= "Weights")
-barplot(plot_min, names.arg = tickers , xlab = "Assets", ylab= "Weights")
+barplot(plot_max, names.arg = tickers , xlab = "Assets", ylab= "Weights",
+        main = "Minimum variance portfolio", legend.text = tickers,
+         col = rainbow(6))
+barplot(plot_min, names.arg = tickers , xlab = "Assets", ylab= "Weights",
+      main = "Maximum Sharpe Ratio Portfolio", legend.text = tickers,
+      col = rainbow(7))
 portaf_invers
 

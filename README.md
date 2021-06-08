@@ -104,3 +104,63 @@ returns excluding 2020 we obtain:
     #> [1] "The average annual portfolio returns is 26.08%"
     #> [[1]]
     #> [1] "The average annual portfolio returns until 2019-12-31 is 23.41%"
+
+Now, We going to calculate the Standard deviation or the volatility of
+the portfolio.
+
+    #> [1] "The daily portfolio volatility is  0.0195"
+    #> [[1]]
+    #> [1] "The daily portfolio volatility until  2019-12-31  is  0.0182"
+
+Calculating the annual volatility of the portfolio, we obtain:
+
+    #> [1] "The annual portfolio volatility is  0.309228551476367"
+    #> [1] "The annual portfolio volatility until 2019-12-31 is  0.289326999817226"
+
+The sharpe ratio is a measure of the excess return per unit of risk of
+an investment, it is used to show to what extent the return on an
+investment compensates the investor for taking risk in his investment,
+so it is good to calculate it.
+
+    #> [1] "The annual portfolio sharpe ratio is 0.8433"
+
+------------------------------------------------------------------------
+
+## Find the Portfolio optimization
+
+To find the most optimal portfolio we will make a loop where for each
+iteration we will calculate random weights, we will calculate the return
+for the given stocks with those weights, the standard deviation of each
+of the virtual portfolios as well as the sharp ratio of each portfolio,
+at the end, we will identify the portfolio with minimum variance and
+maximum sharp ratio, in our case, we obtain the following after 5,000
+iterations:
+
+-   Minimum variance portfolio:
+
+<!-- -->
+
+    #> # A tibble: 1 x 9
+    #>      MU   BAC    FB  GOOG   AAPL   PDD   Return   Risk SharpeRatio
+    #>   <dbl> <dbl> <dbl> <dbl>  <dbl> <dbl>    <dbl>  <dbl>       <dbl>
+    #> 1 0.173 0.213 0.114 0.285 0.0808 0.134 0.000743 0.0132      0.0562
+
+-   Maximum Sharpe Ratio Portfolio
+
+<!-- -->
+
+    #> # A tibble: 1 x 9
+    #>      MU   BAC    FB   GOOG  AAPL   PDD   Return   Risk SharpeRatio
+    #>   <dbl> <dbl> <dbl>  <dbl> <dbl> <dbl>    <dbl>  <dbl>       <dbl>
+    #> 1 0.101 0.221 0.155 0.0641 0.184 0.274 0.000836 0.0138      0.0605
+
+Finally, let’s visualize in a bar chart, the minimum variance portfolio
+for each asset, as well as the maximum sharpe ratio portfolio for each
+asset.
+
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->
+
+We can observe and mention some conclusions about the bar charts that
+for the stock “BAC” has a lot of weight in both bar charts, so we can
+conclude that, according to our investment portfolio, it is wise to give
+a lot of weight to this asset.
