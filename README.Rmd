@@ -11,17 +11,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Investment-Portfolio
+# Investment Portfolio
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of Investment-Portfolio is to ...
+The objective of the investment portfolio is to find the most optimal investment portfolio with certain assets and weights as initial values, calculating important statistics of the same, as a complement to explain in detail the performance of the shares with the objective of making the best possible decisions to invest in the near future.
 
 ***
 ## Stock selection and visualitazion of data
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
 
 The following is a list of the stocks used for the analysis of the portfolio with the respective weights of each stock, it should be noted that the following portfolio to be analyzed is not personal, it was taken from an investor of the following website http://dataroma.com/.
@@ -286,4 +285,4 @@ barplot(plot_min, names.arg = tickers , xlab = "Assets", ylab= "Weights",
       col = rainbow(7))
 ```
 
-We can observe and mention some conclusions about the bar charts that for the stock "BAC" has a lot of weight in both bar charts, so we can conclude that, according to our investment portfolio, it is wise to give a lot of weight to this asset.
+**We can observe and mention some conclusions about the bar charts that for the stock "BAC" has a lot of weight in both bar charts, so we can conclude that, according to our investment portfolio, it is wise to give a lot of weight to this asset.**

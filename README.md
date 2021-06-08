@@ -1,19 +1,20 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Investment-Portfolio
+# Investment Portfolio
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of Investment-Portfolio is to …
+The objective of the investment portfolio is to find the most optimal
+investment portfolio with certain assets and weights as initial values,
+calculating important statistics of the same, as a complement to explain
+in detail the performance of the shares with the objective of making the
+best possible decisions to invest in the near future.
 
 ------------------------------------------------------------------------
 
 ## Stock selection and visualitazion of data
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
 
 The following is a list of the stocks used for the analysis of the
 portfolio with the respective weights of each stock, it should be noted
@@ -141,18 +142,18 @@ iterations:
 <!-- -->
 
     #> # A tibble: 1 x 9
-    #>      MU   BAC    FB  GOOG   AAPL   PDD   Return   Risk SharpeRatio
-    #>   <dbl> <dbl> <dbl> <dbl>  <dbl> <dbl>    <dbl>  <dbl>       <dbl>
-    #> 1 0.173 0.213 0.114 0.285 0.0808 0.134 0.000743 0.0132      0.0562
+    #>      MU    BAC    FB  GOOG   AAPL   PDD   Return   Risk SharpeRatio
+    #>   <dbl>  <dbl> <dbl> <dbl>  <dbl> <dbl>    <dbl>  <dbl>       <dbl>
+    #> 1 0.274 0.0921 0.197 0.249 0.0723 0.116 0.000741 0.0132      0.0561
 
 -   Maximum Sharpe Ratio Portfolio
 
 <!-- -->
 
     #> # A tibble: 1 x 9
-    #>      MU   BAC    FB   GOOG  AAPL   PDD   Return   Risk SharpeRatio
-    #>   <dbl> <dbl> <dbl>  <dbl> <dbl> <dbl>    <dbl>  <dbl>       <dbl>
-    #> 1 0.101 0.221 0.155 0.0641 0.184 0.274 0.000836 0.0138      0.0605
+    #>      MU   BAC     FB  GOOG  AAPL    PDD   Return   Risk SharpeRatio
+    #>   <dbl> <dbl>  <dbl> <dbl> <dbl>  <dbl>    <dbl>  <dbl>       <dbl>
+    #> 1 0.134 0.172 0.0334 0.288 0.329 0.0429 0.000831 0.0137      0.0605
 
 Finally, let’s visualize in a bar chart, the minimum variance portfolio
 for each asset, as well as the maximum sharpe ratio portfolio for each
@@ -160,7 +161,7 @@ asset.
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->
 
-We can observe and mention some conclusions about the bar charts that
+**We can observe and mention some conclusions about the bar charts that
 for the stock “BAC” has a lot of weight in both bar charts, so we can
 conclude that, according to our investment portfolio, it is wise to give
-a lot of weight to this asset.
+a lot of weight to this asset.**
